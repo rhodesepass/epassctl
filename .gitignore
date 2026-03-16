@@ -1,0 +1,12 @@
+.cache
+build/
+compile_commands.json
+.vscode/
+.idea/
+.DS_Store
+.clangd/
+.clang-tidy/
+.clang-format/
+.clang-rename/
+.clang-rename/
+001-dev-doc/
