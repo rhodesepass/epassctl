@@ -17,7 +17,13 @@ add_executable(${PROJECT_NAME}
   src/ipc_client.c
   src/ipc_common.c
   src/log.c
-  src/uuid.c 
+  src/uuid.c
+  src/cmd_ui.c
+  src/cmd_prts.c
+  src/cmd_settings.c
+  src/cmd_mediaplayer.c
+  src/cmd_overlay.c
+  src/cmd_app.c
 )
 
 # 在下面添加头文件目录，一行一个
