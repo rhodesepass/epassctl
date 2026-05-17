@@ -65,10 +65,11 @@ static const enum_map_t sw_interval_map[] = {
 };
 
 static const enum_map_t usb_mode_map[] = {
-    {"mtp",    usb_mode_t_MTP},
-    {"serial", usb_mode_t_SERIAL},
-    {"rndis",  usb_mode_t_RNDIS},
-    {"none",   usb_mode_t_NONE},
+    {"mtp",       usb_mode_t_MTP},
+    {"serial",    usb_mode_t_SERIAL},
+    {"rndis",     usb_mode_t_RNDIS},
+    {"none",      usb_mode_t_NONE},
+    {"epmanager", usb_mode_t_EPMANAGER},
     {NULL, -1}
 };
 

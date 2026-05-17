@@ -216,6 +216,12 @@ int ipc_client_prts_set_blocked_auto_switch(ipc_client_t *client, bool is_blocke
     return ipc_client_request(client, &req, NULL);
 }
 
+int ipc_client_prts_reload_assets(ipc_client_t *client) {
+    ipc_req_t req = {0};
+    req.type = IPC_REQ_PRTS_RELOAD_ASSETS;
+    return ipc_client_request(client, &req, NULL);
+}
+
 // ========== Settings 子模块 ==========
 int ipc_client_settings_get(ipc_client_t *client, ipc_settings_data_t *out) {
     if (!out) {

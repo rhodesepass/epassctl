@@ -24,6 +24,7 @@ int ipc_client_prts_get_status(ipc_client_t *client, ipc_resp_prts_status_data_t
 int ipc_client_prts_set_operator(ipc_client_t *client, int operator_index);
 int ipc_client_prts_get_operator_info(ipc_client_t *client, int operator_index, ipc_prts_operator_info_data_t *out);
 int ipc_client_prts_set_blocked_auto_switch(ipc_client_t *client, bool is_blocked);
+int ipc_client_prts_reload_assets(ipc_client_t *client);
 
 // ========== Settings 子模块 ==========
 int ipc_client_settings_get(ipc_client_t *client, ipc_settings_data_t *out);

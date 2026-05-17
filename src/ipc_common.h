@@ -42,7 +42,8 @@ typedef enum {
     usb_mode_t_MTP = 0,
     usb_mode_t_SERIAL = 1,
     usb_mode_t_RNDIS = 2,
-    usb_mode_t_NONE = 3
+    usb_mode_t_NONE = 3,
+    usb_mode_t_EPMANAGER = 4,
 } usb_mode_t;
 
 typedef enum {
@@ -146,6 +147,9 @@ typedef struct {
 } ipc_req_prts_set_blocked_auto_switch_data_t;
 // 设置闭锁普瑞塞斯自动切换（时间切换） - 响应数据（空）
 
+// 重新从磁盘扫描并加载干员素材 - 请求数据（空）
+// 重新从磁盘扫描并加载干员素材 - 响应数据（空）
+
 // ========== Settings 子模块 ==========
 // 获取设置 - 请求数据（空）
 // 整定设置 - 响应数据（空）
@@ -222,6 +226,8 @@ typedef enum {
     // 设置闭锁普瑞塞斯自动切换（时间切换）
     // 类似设置里的
     IPC_REQ_PRTS_SET_BLOCKED_AUTO_SWITCH = 7,
+    // 重新从磁盘扫描并加载干员素材。
+    IPC_REQ_PRTS_RELOAD_ASSETS = 15,
     
     // Settings 子模块
     // 获取设置。
@@ -244,7 +250,7 @@ typedef enum {
     // 全局请求
     IPC_REQ_APP_EXIT = 14,
 
-    IPC_REQ_MAX
+    IPC_REQ_MAX = 16,
 } ipc_req_type_t;
 
 typedef struct {

@@ -110,9 +110,11 @@ epassctl json ui warning "提示" "操作完成" check 4278255360
 | `set_operator` | `epassctl prts set_operator <index>` |
 | `get_operator_info` | `epassctl prts get_operator_info <index>` |
 | `block_auto_switch` | `epassctl prts block_auto_switch <true 或 false 或 1 或 0>` |
+| `reload_assets` | `epassctl prts reload_assets` |
 
 - **`status`**：返回状态机状态、干员数量、当前干员索引等。`json` 下含 `state`、`state_id`、`operator_count`、`operator_index`。
 - **`block_auto_switch`**：`true` / `false`（大小写不敏感）或 `1` / `0`，用于闭锁/解锁 PRTS 按时间自动切换干员（与主程序内设置行为一致）。
+- **`reload_assets`**：触发主程序重新从磁盘扫描并加载 PRTS 干员素材（无额外参数；成功时输出 `ok`）。建议在修改 SD 卡/NAND 上的干员资源后使用，必要时可先 `block_auto_switch true` 避免扫描期间自动切换干扰。
 
 ## 模块：`settings`
 
@@ -130,16 +132,27 @@ epassctl json ui warning "提示" "操作完成" check 4278255360
 | `brightness` | 整数亮度 |
 | `interval` | `1min`、`3min`、`5min`、`10min`、`30min` |
 | `mode` | `sequence`、`random`、`manual` |
-| `usb` | `mtp`、`serial`、`rndis`、`none` |
+| `usb` | `mtp`、`serial`、`rndis`、`none`、`epmanager`（见下表） |
 | `lowbat` | `0` 或 `1` |
 | `no_intro` | `0` 或 `1` |
 | `no_overlay` | `0` 或 `1` |
+
+`usb` 模式名称与枚举 ID：
+
+| 名称 | ID |
+|------|-----|
+| `mtp` | 0 |
+| `serial` | 1 |
+| `rndis` | 2 |
+| `none` | 3 |
+| `epmanager` | 4 |
 
 示例：
 
 ```bash
 epassctl settings get
 epassctl settings set brightness 8 mode random
+epassctl settings set usb epmanager
 ```
 
 ## 模块：`mediaplayer`

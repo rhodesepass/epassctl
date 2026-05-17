@@ -14,6 +14,17 @@ static void print_usage(void) {
     fprintf(stderr, "      获取指定干员信息\n");
     fprintf(stderr, "  block_auto_switch <true|false>\n");
     fprintf(stderr, "      闭锁/解锁 PRTS 自动切换\n");
+    fprintf(stderr, "  reload_assets\n");
+    fprintf(stderr, "      重新从磁盘扫描并加载干员素材\n");
+}
+
+static int cmd_prts_reload_assets(ipc_client_t *client) {
+    if (ipc_client_prts_reload_assets(client) < 0) {
+        print_error("prts reload_assets 请求失败");
+        return 1;
+    }
+    print_ok();
+    return 0;
 }
 
 static int cmd_prts_status(ipc_client_t *client) {
@@ -128,6 +139,8 @@ int cmd_prts(int argc, char **argv, ipc_client_t *client) {
         return cmd_prts_get_operator_info(sub_argc, sub_argv, client);
     if (strcmp(action, "block_auto_switch") == 0)
         return cmd_prts_block_auto_switch(sub_argc, sub_argv, client);
+    if (strcmp(action, "reload_assets") == 0)
+        return cmd_prts_reload_assets(client);
 
     fprintf(stderr, "未知操作: prts %s\n", action);
     print_usage();
