@@ -193,9 +193,9 @@ static inline void print_ok(void) {
 
 static inline void print_error(const char *msg) {
     if (g_json_output)
-        fprintf(stderr, "{\"status\":\"error\",\"message\":\"%s\"}\n", msg);
+        printf("{\"status\":\"error\",\"message\":\"%s\"}\n", msg);
     else
-        fprintf(stderr, "error: %s\n", msg);
+        printf("error: %s\n", msg);
 }
 
 // ========== 模块 handler 原型 ==========
