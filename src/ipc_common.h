@@ -202,6 +202,58 @@ typedef struct{
 } ipc_req_app_exit_data_t;
 // 退出应用 - 响应数据（空）
 
+// ========== UIX 子模块（外部交互会话）==========
+// 轮询式：START 立即返回 session_id，结果由客户端 SESSION_POLL 轮询。
+// 同时只允许一个会话，冲突回 IPC_RESP_ERROR_STATE_CONFLICT。
+// 字段布局即线上格式，与 drm_app_neo/src/ui/uix_types.h 保持一致。
+#define UIX_TITLE_MAX 64   // == UI_WARNING_MAX_TITLE_LENGTH
+#define UIX_DESC_MAX 128   // == UI_WARNING_MAX_DESC_LENGTH
+
+typedef enum {
+    UIX_PENDING = 0,
+    UIX_CONFIRMED = 1,   // 确认框选"是"，或选择框选中一项（见 choice）
+    UIX_DENIED = 2,      // 用户选"否"/取消
+    UIX_CANCELLED = 3,   // 发起方 SESSION_CANCEL 撤回
+    UIX_TIMEOUT = 4,     // timeout_ms 到期无人操作
+    UIX_NOT_FOUND = 5,   // session_id 不匹配（会话已被顶掉/不存在）
+} uix_state_t;
+
+typedef enum {
+    UIX_USB_CHOICE_MTP = 0,
+    UIX_USB_CHOICE_EPASS = 1,
+    UIX_USB_CHOICE_FIDO = 2,
+    UIX_USB_CHOICE_CHARGE_ONLY = 3,
+} uix_usb_choice_t;
+
+// 外部确认（是/否弹窗）- 请求数据。
+typedef struct {
+    char title[UIX_TITLE_MAX];
+    char desc[UIX_DESC_MAX];
+    uint32_t timeout_ms;  // 0 = 不超时（发起方自管）
+} ipc_req_uix_confirm_start_data_t;
+
+// USB 功能选择 - 请求数据。bit0=MTP bit1=EPASS bit2=FIDO bit3=仅充电
+typedef struct {
+    uint32_t func_mask;
+    uint32_t timeout_ms;
+} ipc_req_uix_usb_select_start_data_t;
+
+// 两个 START 的响应数据。
+typedef struct {
+    uint32_t session_id;
+} ipc_resp_uix_session_start_data_t;
+
+// POLL / CANCEL - 请求数据。
+typedef struct {
+    uint32_t session_id;
+} ipc_req_uix_session_data_t;
+
+// POLL - 响应数据。
+typedef struct {
+    uint32_t state;   // uix_state_t
+    uint32_t choice;  // 仅 USB_SELECT 且 CONFIRMED 时有效（uix_usb_choice_t）
+} ipc_resp_uix_session_poll_data_t;
+
 // =====================================
 // 请求 部分
 // =====================================
@@ -250,7 +302,13 @@ typedef enum {
     // 全局请求
     IPC_REQ_APP_EXIT = 14,
 
-    IPC_REQ_MAX = 16,
+    // UIX 子模块（外部交互会话，usb_aio_handler 用）
+    IPC_REQ_UIX_CONFIRM_START = 16,
+    IPC_REQ_UIX_USB_SELECT_START = 17,
+    IPC_REQ_UIX_SESSION_POLL = 18,
+    IPC_REQ_UIX_SESSION_CANCEL = 19,
+
+    IPC_REQ_MAX = 20,
 } ipc_req_type_t;
 
 typedef struct {
@@ -267,6 +325,9 @@ typedef struct {
         ipc_req_overlay_schedule_transition_data_t overlay_schedule_transition;
         ipc_req_overlay_schedule_transition_video_data_t overlay_schedule_transition_video;
         ipc_req_app_exit_data_t app_exit;
+        ipc_req_uix_confirm_start_data_t uix_confirm_start;
+        ipc_req_uix_usb_select_start_data_t uix_usb_select_start;
+        ipc_req_uix_session_data_t uix_session;
     };
 } ipc_req_t;
 
@@ -293,6 +354,8 @@ typedef struct {
         ipc_prts_operator_info_data_t prts_operator_info;
         ipc_settings_data_t settings;
         ipc_mediaplayer_video_path_data_t mediaplayer_video_path;
+        ipc_resp_uix_session_start_data_t uix_session_start;
+        ipc_resp_uix_session_poll_data_t uix_session_poll;
     };
 } ipc_resp_t;
 

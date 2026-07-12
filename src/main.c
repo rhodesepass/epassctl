@@ -18,6 +18,7 @@ static const module_entry_t modules[] = {
     {"mediaplayer", cmd_mediaplayer, "媒体播放器控制"},
     {"overlay",     cmd_overlay,     "过渡动画排期"},
     {"app",         cmd_app,         "应用全局控制 (退出/重启)"},
+    {"uix",         cmd_uix,         "外部交互会话 (确认框/USB选择, 轮询式)"},
     {NULL, NULL, NULL}
 };
 

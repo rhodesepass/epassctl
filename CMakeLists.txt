@@ -24,6 +24,7 @@ add_executable(${PROJECT_NAME}
   src/cmd_mediaplayer.c
   src/cmd_overlay.c
   src/cmd_app.c
+  src/cmd_uix.c
 )
 
 # 在下面添加头文件目录，一行一个

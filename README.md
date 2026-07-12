@@ -26,7 +26,7 @@ epassctl [json] <模块> <操作> [参数...]
 | 位置 | 含义 |
 |------|------|
 | `json` | **可选**。若作为**第一个**参数出现，则查询类命令输出 JSON，成功/失败信息也使用 JSON（见下文「输出格式」）。 |
-| `<模块>` | `ui`、`prts`、`settings`、`mediaplayer`、`overlay`、`app` 之一。 |
+| `<模块>` | `ui`、`prts`、`settings`、`mediaplayer`、`overlay`、`app`、`uix` 之一。 |
 | `<操作>` | 各模块下的子命令。 |
 | 其余 | 各子命令要求的参数，按顺序书写。 |
 
@@ -204,6 +204,48 @@ epassctl overlay transition_video /mnt/video.mp4 300000 fade - 0xFF0000FF
 示例：`epassctl app exit restart` 或 `epassctl app exit 1`
 
 **警告**：`app exit` 会导致主程序按退出码执行相应行为，请在明确后果后使用。
+
+## 模块：`uix`
+
+外部交互会话（**轮询式**）。发起方触发一次屏上交互（确认框 / USB 功能选择），
+`START` **立即返回 `session_id` 而不阻塞**——因为主程序的 IPC 线程不能等用户点屏幕
+（结果产生在 LVGL 线程）。之后用 `poll <session_id>` 反复轮询，直到 `state` 不再是 `pending`。
+同一时刻只允许一个会话，冲突时 `START` 失败。
+
+| 操作 | 用法 |
+|------|------|
+| `confirm` | `epassctl uix confirm <title> <desc> [timeout_ms]` |
+| `usb_select` | `epassctl uix usb_select <功能列表> [timeout_ms]` |
+| `poll` | `epassctl uix poll <session_id>` |
+| `cancel` | `epassctl uix cancel <session_id>` |
+
+- `功能列表`：逗号分隔，取值 `mtp`、`epass`、`fido`、`charge`（映射为位掩码）。
+- `timeout_ms`：省略或 `0` 表示不超时（发起方自管）。
+
+`poll` 返回的 `state`：
+
+| 名称 | 数值 | 含义 |
+|------|------|------|
+| `pending` | 0 | 等待用户操作 |
+| `confirmed` | 1 | 确认框选“是”，或选择框选中一项（见 `choice`） |
+| `denied` | 2 | 用户选“否”/取消 |
+| `cancelled` | 3 | 发起方 `cancel` 撤回 |
+| `timeout` | 4 | `timeout_ms` 到期无人操作 |
+| `not_found` | 5 | `session_id` 不匹配（会话已被顶掉/不存在） |
+
+`choice` 仅在 `usb_select` 会话且 `state=confirmed` 时有意义：`mtp`/`epass`/`fido`/`charge`。
+
+示例（shell 轮询）：
+
+```sh
+sid=$(epassctl json uix confirm "格式化" "确认清空 SD 卡?" 10000 | jq -r .session_id)
+while :; do
+  st=$(epassctl json uix poll "$sid" | jq -r .state)
+  [ "$st" = pending ] || break
+  sleep 1
+done
+echo "结果: $st"
+```
 
 ## 退出码
 

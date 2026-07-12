@@ -308,3 +308,62 @@ int ipc_client_app_exit(ipc_client_t *client, int exit_code) {
     req.app_exit.exit_code = exit_code;
     return ipc_client_request(client, &req, NULL);
 }
+
+// ========== UIX 子模块（外部交互会话）==========
+int ipc_client_uix_confirm_start(ipc_client_t *client, const char *title, const char *desc, uint32_t timeout_ms, uint32_t *out_session_id) {
+    if (!title || !desc || !out_session_id) {
+        return -1;
+    }
+    ipc_req_t req = {0};
+    ipc_resp_t resp = {0};
+    req.type = IPC_REQ_UIX_CONFIRM_START;
+    snprintf(req.uix_confirm_start.title, sizeof(req.uix_confirm_start.title), "%s", title);
+    snprintf(req.uix_confirm_start.desc, sizeof(req.uix_confirm_start.desc), "%s", desc);
+    req.uix_confirm_start.timeout_ms = timeout_ms;
+    if (ipc_client_request(client, &req, &resp) < 0) {
+        return -1;
+    }
+    *out_session_id = resp.uix_session_start.session_id;
+    return 0;
+}
+
+int ipc_client_uix_usb_select_start(ipc_client_t *client, uint32_t func_mask, uint32_t timeout_ms, uint32_t *out_session_id) {
+    if (!out_session_id) {
+        return -1;
+    }
+    ipc_req_t req = {0};
+    ipc_resp_t resp = {0};
+    req.type = IPC_REQ_UIX_USB_SELECT_START;
+    req.uix_usb_select_start.func_mask = func_mask;
+    req.uix_usb_select_start.timeout_ms = timeout_ms;
+    if (ipc_client_request(client, &req, &resp) < 0) {
+        return -1;
+    }
+    *out_session_id = resp.uix_session_start.session_id;
+    return 0;
+}
+
+int ipc_client_uix_session_poll(ipc_client_t *client, uint32_t session_id, uint32_t *out_state, uint32_t *out_choice) {
+    if (!out_state) {
+        return -1;
+    }
+    ipc_req_t req = {0};
+    ipc_resp_t resp = {0};
+    req.type = IPC_REQ_UIX_SESSION_POLL;
+    req.uix_session.session_id = session_id;
+    if (ipc_client_request(client, &req, &resp) < 0) {
+        return -1;
+    }
+    *out_state = resp.uix_session_poll.state;
+    if (out_choice) {
+        *out_choice = resp.uix_session_poll.choice;
+    }
+    return 0;
+}
+
+int ipc_client_uix_session_cancel(ipc_client_t *client, uint32_t session_id) {
+    ipc_req_t req = {0};
+    req.type = IPC_REQ_UIX_SESSION_CANCEL;
+    req.uix_session.session_id = session_id;
+    return ipc_client_request(client, &req, NULL);
+}

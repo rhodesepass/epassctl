@@ -73,6 +73,33 @@ static const enum_map_t usb_mode_map[] = {
     {NULL, -1}
 };
 
+static const enum_map_t uix_state_map[] = {
+    {"pending",   UIX_PENDING},
+    {"confirmed", UIX_CONFIRMED},
+    {"denied",    UIX_DENIED},
+    {"cancelled", UIX_CANCELLED},
+    {"timeout",   UIX_TIMEOUT},
+    {"not_found", UIX_NOT_FOUND},
+    {NULL, -1}
+};
+
+static const enum_map_t uix_usb_choice_map[] = {
+    {"mtp",    UIX_USB_CHOICE_MTP},
+    {"epass",  UIX_USB_CHOICE_EPASS},
+    {"fido",   UIX_USB_CHOICE_FIDO},
+    {"charge", UIX_USB_CHOICE_CHARGE_ONLY},
+    {NULL, -1}
+};
+
+// USB 功能选择的位掩码：bit0=MTP bit1=EPASS bit2=FIDO bit3=仅充电
+static const enum_map_t uix_usb_func_map[] = {
+    {"mtp",    1u << UIX_USB_CHOICE_MTP},
+    {"epass",  1u << UIX_USB_CHOICE_EPASS},
+    {"fido",   1u << UIX_USB_CHOICE_FIDO},
+    {"charge", 1u << UIX_USB_CHOICE_CHARGE_ONLY},
+    {NULL, -1}
+};
+
 static const enum_map_t exitcode_map[] = {
     {"normal",      EXITCODE_NORMAL},
     {"restart",     EXITCODE_RESTART_APP},
@@ -206,3 +233,4 @@ int cmd_settings(int argc, char **argv, ipc_client_t *client);
 int cmd_mediaplayer(int argc, char **argv, ipc_client_t *client);
 int cmd_overlay(int argc, char **argv, ipc_client_t *client);
 int cmd_app(int argc, char **argv, ipc_client_t *client);
+int cmd_uix(int argc, char **argv, ipc_client_t *client);
