@@ -114,7 +114,7 @@ epassctl json ui warning "提示" "操作完成" check 4278255360
 
 - **`status`**：返回状态机状态、干员数量、当前干员索引等。`json` 下含 `state`、`state_id`、`operator_count`、`operator_index`。
 - **`block_auto_switch`**：`true` / `false`（大小写不敏感）或 `1` / `0`，用于闭锁/解锁 PRTS 按时间自动切换干员（与主程序内设置行为一致）。
-- **`reload_assets`**：触发主程序重新从磁盘扫描并加载 PRTS 干员素材（无额外参数；成功时输出 `ok`）。建议在修改 SD 卡/NAND 上的干员资源后使用，必要时可先 `block_auto_switch true` 避免扫描期间自动切换干扰。
+- **`reload_assets`**：触发主程序重新从磁盘扫描并加载 PRTS 干员素材（无额外参数；成功时输出 `ok`）。建议在修改系统盘/数据盘上的干员资源后使用，必要时可先 `block_auto_switch true` 避免扫描期间自动切换干扰。
 
 ## 模块：`settings`
 
@@ -189,6 +189,13 @@ epassctl overlay transition_video /mnt/video.mp4 300000 fade - 0xFF0000FF
 | 操作 | 用法 |
 |------|------|
 | `exit` | `epassctl app exit <code>` |
+| `reload_list` | `epassctl app reload_list` |
+
+### `reload_list`
+
+让主程序重新扫描 `/app`（及已挂载的 SD 应用目录）并刷新应用列表，用于装/删应用后免重启刷新。无参数，成功返回 `ok`。运行中的后台应用会被保留。
+
+### `exit`
 
 `code` 可为**十进制数字**或下列**名称**（与主程序约定一致）：
 
@@ -198,7 +205,7 @@ epassctl overlay transition_video /mnt/video.mp4 300000 fade - 0xFF0000FF
 | `restart` | 1 | 重启应用 |
 | `appstart` | 2 | 应用启动相关 |
 | `shutdown` | 3 | 关机 |
-| `format_sd` | 4 | 格式化 SD |
+| `format_sd` | 4 | 格式化数据盘 |
 | `srgn_config` | 5 | SRGN 配置等 |
 
 示例：`epassctl app exit restart` 或 `epassctl app exit 1`
@@ -238,7 +245,7 @@ epassctl overlay transition_video /mnt/video.mp4 300000 fade - 0xFF0000FF
 示例（shell 轮询）：
 
 ```sh
-sid=$(epassctl json uix confirm "格式化" "确认清空 SD 卡?" 10000 | jq -r .session_id)
+sid=$(epassctl json uix confirm "格式化" "确认清空数据盘?" 10000 | jq -r .session_id)
 while :; do
   st=$(epassctl json uix poll "$sid" | jq -r .state)
   [ "$st" = pending ] || break

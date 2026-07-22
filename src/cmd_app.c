@@ -7,9 +7,20 @@ static void print_usage(void) {
     fprintf(stderr, "epassctl app <操作> [参数...]\n\n");
     fprintf(stderr, "可用操作:\n");
     fprintf(stderr, "  exit <code>\n");
-    fprintf(stderr, "      使主应用以指定退出码退出\n\n");
+    fprintf(stderr, "      使主应用以指定退出码退出\n");
+    fprintf(stderr, "  reload_list\n");
+    fprintf(stderr, "      重新从磁盘扫描并刷新应用列表\n\n");
     fprintf(stderr, "code 可选值 (数字或名称):\n");
     enum_print_options(exitcode_map);
+}
+
+static int cmd_app_reload_list(ipc_client_t *client) {
+    if (ipc_client_app_reload_list(client) < 0) {
+        print_error("app reload_list 请求失败");
+        return 1;
+    }
+    print_ok();
+    return 0;
 }
 
 static int cmd_app_exit(int argc, char **argv, ipc_client_t *client) {
@@ -51,6 +62,8 @@ int cmd_app(int argc, char **argv, ipc_client_t *client) {
 
     if (strcmp(action, "exit") == 0)
         return cmd_app_exit(sub_argc, sub_argv, client);
+    if (strcmp(action, "reload_list") == 0)
+        return cmd_app_reload_list(client);
 
     fprintf(stderr, "未知操作: app %s\n", action);
     print_usage();

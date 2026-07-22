@@ -309,6 +309,12 @@ int ipc_client_app_exit(ipc_client_t *client, int exit_code) {
     return ipc_client_request(client, &req, NULL);
 }
 
+int ipc_client_app_reload_list(ipc_client_t *client) {
+    ipc_req_t req = {0};
+    req.type = IPC_REQ_APPS_RELOAD_LIST;
+    return ipc_client_request(client, &req, NULL);
+}
+
 // ========== UIX 子模块（外部交互会话）==========
 int ipc_client_uix_confirm_start(ipc_client_t *client, const char *title, const char *desc, uint32_t timeout_ms, uint32_t *out_session_id) {
     if (!title || !desc || !out_session_id) {

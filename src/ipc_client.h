@@ -40,6 +40,7 @@ int ipc_client_overlay_schedule_transition_video(ipc_client_t *client, const cha
 
 // ========== 全局 ==========
 int ipc_client_app_exit(ipc_client_t *client, int exit_code);
+int ipc_client_app_reload_list(ipc_client_t *client);
 
 // ========== UIX 子模块（外部交互会话）==========
 int ipc_client_uix_confirm_start(ipc_client_t *client, const char *title, const char *desc, uint32_t timeout_ms, uint32_t *out_session_id);
